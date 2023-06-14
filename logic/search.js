@@ -5,11 +5,21 @@ const listenToSearchBar = () => {
     const submit = document.getElementById("search-button")
     console.log("true");
     if(submit !== null) {
+        triggerClickEvent(input, submit)
         submit.addEventListener("click", () => {
             console.log(input.value);
             searchForPokemon(input.value);
         })
     }
+}
+
+const triggerClickEvent = (input, submit) => {
+    input.addEventListener("keypress", (event) => {
+        console.log(event.key);
+        if(event.key === "Enter") {
+            submit.click();
+        }
+    })
 }
 
 const searchForPokemon = (pokemonName) => {
