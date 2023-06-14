@@ -1,5 +1,6 @@
 import { applyTheme } from "./style.js";
 import { getPokemons } from "./script.js";
+import { listenToSearchBar } from "./search.js";
 
 const container = document.querySelector(".body-container");
 
@@ -13,7 +14,6 @@ const renderDescriptionPage = () => {
             if(cardId === card.dataset.id) {
                 const pokemonObject = JSON.parse(card.dataset.pokemon);
                 container.innerHTML = loadDescriptionPage(pokemonObject, card.dataset.description);
-                console.log(pokemonObject, card);
             }
         });
     });
@@ -78,10 +78,10 @@ const loadHomePage = () => {
 }
 
 const clearContainer = () => {
-    for(let i = 0; i < container.children.length; i++) {
-        container.children[i].style.display = 'none';
-    }
-    // container.innerHTML = "";
+    // for(let i = 0; i < container.children.length; i++) {
+    //     container.children[i].style.display = 'none';
+    // }
+    container.innerHTML = "";
 }
 
 const listenToBackArrow = () => {
@@ -96,22 +96,19 @@ const listenToBackArrow = () => {
     }
 }
 
-// Generate popstate event
-const dispatchPopstateEvent = () => {
-    const popsateEvent = new Event("popstate");
-    window.dispatchEvent(popsateEvent);
-}
-
+/**************************************************/
 const mainFunction = () => {
     container.innerHTML = loadHomePage();
     renderDescriptionPage();
+    getPokemons();
+    listenToSearchBar();
     applyTheme();
     container.onclick = () => {
         listenToBackArrow();
-        dispatchPopstateEvent();
+        listenToSearchBar();
     }
 }
 
 /* START */
 mainFunction();
-
+/**************************************************/

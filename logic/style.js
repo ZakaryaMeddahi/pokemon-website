@@ -1,6 +1,5 @@
 
 const checkbox = document.getElementById("checkbox");
-const container = document.querySelector(".body-container");
 
 // let theme = {
 //     themeType: "default", 
@@ -95,6 +94,12 @@ const storeTheme = (theme) => {
 
 const applyTheme = () => {
     const theme = localStorage.getItem("theme");
+    if(theme) {
+        checkParsingStatus(theme);
+    }
+}
+
+const checkParsingStatus = (theme) => {
     const themeObject = JSON.parse(theme)
     if(themeObject) {
         changeColors(themeObject);

@@ -1,32 +1,47 @@
 
 let id;
 
-// This anoying function to create card for pokemon
+// Create card for pokemon
 function pokemonCard(pokemon) {
-    const card = document.createElement("div");
-    const img = document.createElement("img");
-    const h3 = document.createElement("h3");
     const container = document.querySelector(".pokemons-container");
+    const card = document.createElement("div");
     if(container !== null) {
-      const theme = localStorage.getItem("theme");
-      const themeObject = JSON.parse(theme);
-      card.classList = "pokemon-card";
-      card.dataset.id = pokemon.id;
-      card.dataset.pokemon = JSON.stringify(pokemon);
-      //div.dataset.desc = pokemon.description
-      // console.log(div.dataset.pokemon);
-      card.style.backgroundColor = themeObject.primaryColor;
-      card.style.boxShadow = `1px 1px 15px ${themeObject.cardShadowColor}`;
-      img.src = pokemon.image;
-      img.classList = "pokemon-img"
-      h3.textContent = pokemon.name;
-      h3.classList = "pokemon-name"
-
-      card.appendChild(img);
-      card.appendChild(h3);
-      container.appendChild(card);
-      retrieveDescription(pokemon, card);
+      createDiv(pokemon, container, card);
     }
+    retrieveDescription(pokemon, card);
+}
+
+const createDiv = (pokemon, container, card) => {
+  card.classList = "pokemon-card";
+  card.dataset.id = pokemon.id;
+  card.dataset.pokemon = JSON.stringify(pokemon);
+  styleDiv(card);
+  container.appendChild(card);
+  createH3(pokemon, card);
+  createImg(pokemon, card);
+}
+
+const styleDiv = (card) => {
+  const theme = localStorage.getItem("theme");
+  if(theme) {
+    const themeObject = JSON.parse(theme);
+    card.style.backgroundColor = themeObject.primaryColor;
+    card.style.boxShadow = `1px 1px 15px ${themeObject.cardShadowColor}`;
+  }
+}
+
+const createH3 = (pokemon, card) => {
+  const h3 = document.createElement("h3");
+  h3.textContent = pokemon.name;
+  h3.classList = "pokemon-name";
+  card.appendChild(h3);
+}
+
+const createImg = (pokemon, card) => {
+  const img = document.createElement("img");
+  img.src = pokemon.image;
+  img.classList = "pokemon-img";
+  card.appendChild(img);
 }
 
 // #Creating Card
@@ -45,8 +60,6 @@ function pokemonCard(pokemon) {
 // Result:
 // object containes count property (number of pokemons)
 // so we need another request to get pokemons and their descrition (name, img ...)
-
-
 
 function getPokemons() {
   const url = "https://pokeapi.co/api/v2/pokemon/";
@@ -69,11 +82,17 @@ const requestPokemons = (url) => {
 
 const requestAllPokemons = (url, pokemons) => {
   id = 1;
-  for(let i = 1; i < pokemons.count; i++) {
+  const container = document.querySelector(".pokemons-container");
+  for(let i = 1; i <= 150/*pokemons.count*/; i++) {
     // there is no pokemons with id (1011 -> 1280)
     // so skip them
     if(i < 1011 || i > 1280) {
-      requestPokemon(url+i);
+      const intervalId = setInterval(() => {
+        if(container.children[i-2] !== undefined || i === 1) {
+          clearInterval(intervalId);
+          requestPokemon(url+i);
+        }
+      }, 50);
     }
   }
 }
@@ -100,11 +119,11 @@ const requestPokemonResponse = (request) => {
   }
 }
 
-// Send another request to get desription about pokemon
+// Send another request to get description about pokemon
 const retrieveDescription = (pokemon, card) => {
   const url = pokemon.url;
   const request = new XMLHttpRequest();
-  request.open('GET', url, false);
+  request.open('GET', url, true);
   request.onreadystatechange = () => {
     if(request.readyState === 4 && request.status === 200) {
       const description = JSON.parse(request.response);
@@ -112,18 +131,16 @@ const retrieveDescription = (pokemon, card) => {
     }
   }
   request.send();
-  console.log("inside retrieve");
 }
 
+// Loop throug "description.flavor_text_entries"
+// to get all paragraphs
 const getPokemonDescription = (pokemon, description, card) => {
   let descriptions = [];
   description.flavor_text_entries.forEach((desc) => {
     if(desc.language.name === "en" && !descriptions.includes(desc.flavor_text)) {
-      console.log(desc);
-      console.log(card.dataset.id);
       descriptions.push(desc.flavor_text);
       card.dataset.description += desc.flavor_text;
-      console.log("inside get description");
     }
   });
   console.log(pokemon);
@@ -141,8 +158,9 @@ const getDataForCard = (pokemon, id) => {
   };
   pokemonCard(pokemonSpecification);
 }
-
-getPokemons();
+/**************************************************/
+// getPokemons(); /***********************************/
+/**************************************************/
 
 export {
   getPokemons
