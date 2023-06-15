@@ -122,7 +122,7 @@ i {
 
 .pokemon-card {
     background-color: var(--primary-color);
-    max-width: 350px;
+    width: 100%;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 1px 1px 10px var(--shadow-color);
@@ -249,7 +249,7 @@ i {
         box-shadow: 1px 1px 10px var(--secondary-color);
     }
     .pokemon-card {
-        max-width: 300px;
+        width: 300px;
     }
     .upper-box {
         justify-content: space-between;
